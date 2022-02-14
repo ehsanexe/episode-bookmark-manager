@@ -1,0 +1,10 @@
+{
+  "name": "EpBookmarkMgr",
+  "description": "Auto bookmark last watched ep of your favourite shows!",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["history", "bookmarks"]
+}
