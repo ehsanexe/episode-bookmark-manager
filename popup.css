@@ -1,0 +1,28 @@
+:root {
+  --background: #121212;
+  --primary: #ffffff;
+  --secondary: rgba(255, 255, 255, 0.7);
+}
+
+body {
+  background-color: var(--background);
+  width: 180px;
+}
+
+p {
+  color: var(--primary);
+}
+
+.btnContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  gap: 10px;
+}
+
+.inputContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 12px;
+}

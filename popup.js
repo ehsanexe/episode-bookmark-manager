@@ -4,12 +4,21 @@ chrome.storage.sync.get(["shows"], function (result) {
   console.log("Value currently is " + result.shows);
   let arr = JSON.parse(result.shows);
 
-  arr.forEach((element) => {
+  arr.forEach((element, index) => {
     console.log(element);
     ids.push(element.id);
     const div = document.createElement(`div`);
-    div.innerHTML = `<input id="i${element.id}" placeholder='Enter show name' value="${element.title}" />`;
+    div.id = `d${element.id}`;
+    div.className = "inputContainer";
+    div.innerHTML = `<input id="i${element.id}" placeholder='Enter show name' value="${element.title}" />  <button id="b${element.id}" >X</button> `;
     document.getElementById("shows").appendChild(div);
+    document.getElementById(`b${element.id}`).onclick = function handleDel() {
+      document.getElementById(`d${element.id}`).remove();
+      arr.splice(index, 1);
+      chrome.storage.sync.set({ shows: JSON.stringify(arr) }, function () {
+        console.log("Value is set to " + shows);
+      });
+    };
   });
 });
 
@@ -19,13 +28,21 @@ document.getElementById("add").onclick = function handleAdd(e) {
 
   const div = document.createElement(`div`);
   div.id = `d${id}`;
+  div.className = "inputContainer";
   div.innerHTML = `<input id="i${id}" placeholder='Enter show name' /> <button id="b${id}" >X</button> `;
 
   document.getElementById("shows").appendChild(div);
 
   document.getElementById(`b${id}`).onclick = function handleDel(params) {
-    // console.log("delete", id);
     document.getElementById(`d${id}`).remove();
+    chrome.storage.sync.get(["shows"], function (result) {
+      let arr = JSON.parse(result.shows);
+      let index = arr.findIndex((e) => e.id === id);
+      arr.splice(index, 1);
+      chrome.storage.sync.set({ shows: JSON.stringify(arr) }, function () {
+        console.log("Value is set to " + shows);
+      });
+    });
   };
 };
 
