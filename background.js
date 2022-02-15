@@ -1,10 +1,23 @@
 chrome.history.onVisited.addListener(async (res) => {
   console.log("---", res, res.title);
 
-  //
-  //   chrome.bookmarks.getTree((tree) => {
-  //     console.log("tree", tree);
-  //   });
+  chrome.storage.sync.get(["shows"], function (result) {
+    // console.log("Value currently is " + result.shows);
+    let arr = JSON.parse(result.shows);
+
+    arr.forEach((element) => {
+      if (
+        res.title.includes(element.title) &&
+        res.title.toLowerCase().includes("episode") &&
+        !res.title.toLowerCase().includes("youtube")
+      ) {
+        console.log("yay");
+        return;
+      }
+    });
+  });
+
+  return;
 
   await chrome.bookmarks.getChildren("1", (bk) => {
     let folderId = false;
@@ -15,9 +28,8 @@ chrome.history.onVisited.addListener(async (res) => {
         folderId = element.id;
       }
     });
-    // console.log("bk", bk);
 
-    console.log("fired", folderId);
+    console.log("folderId", folderId);
 
     if (!folderId) {
       chrome.bookmarks.create(

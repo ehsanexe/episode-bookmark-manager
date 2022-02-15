@@ -18,8 +18,15 @@ document.getElementById("add").onclick = function handleAdd(e) {
   ids.push(id);
 
   const div = document.createElement(`div`);
-  div.innerHTML = `<input id="i${id}" placeholder='Enter show name' />`;
+  div.id = `d${id}`;
+  div.innerHTML = `<input id="i${id}" placeholder='Enter show name' /> <button id="b${id}" >X</button> `;
+
   document.getElementById("shows").appendChild(div);
+
+  document.getElementById(`b${id}`).onclick = function handleDel(params) {
+    // console.log("delete", id);
+    document.getElementById(`d${id}`).remove();
+  };
 };
 
 document.getElementById("save").onclick = function handleSave(e) {
@@ -36,3 +43,5 @@ document.getElementById("save").onclick = function handleSave(e) {
     console.log("Value is set to " + shows);
   });
 };
+
+document.on;
