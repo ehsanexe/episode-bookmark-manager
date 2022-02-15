@@ -44,6 +44,16 @@ chrome.history.onVisited.addListener(async (res) => {
             );
           } else {
             console.log("fired");
+            chrome.bookmarks.getChildren(folderId, (showsBk) => {
+              console.log("shows bk", showsBk);
+
+              showsBk.forEach((b) => {
+                let searchWord = b.title.slice(0, -10);
+                if (show.title.includes(searchWord)) {
+                  chrome.bookmarks.remove(b.id);
+                }
+              });
+            });
             chrome.bookmarks.create({
               parentId: folderId,
               url: res.url,
