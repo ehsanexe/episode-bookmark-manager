@@ -1,5 +1,18 @@
 let ids = [];
 
+chrome.storage.sync.get(["shows"], function (result) {
+  console.log("Value currently is " + result.shows);
+  let arr = JSON.parse(result.shows);
+
+  arr.forEach((element) => {
+    console.log(element);
+    ids.push(element.id);
+    const div = document.createElement(`div`);
+    div.innerHTML = `<input id="i${element.id}" placeholder='Enter show name' value="${element.title}" />`;
+    document.getElementById("shows").appendChild(div);
+  });
+});
+
 document.getElementById("add").onclick = function handleAdd(e) {
   let id = Math.floor(Math.random() * 1000000);
   ids.push(id);
@@ -9,15 +22,17 @@ document.getElementById("add").onclick = function handleAdd(e) {
   document.getElementById("shows").appendChild(div);
 };
 
-// function handleSave() {
-//   console.log("z");
-// }
-
 document.getElementById("save").onclick = function handleSave(e) {
-  //   let x = document.getElementById("50").value;
   let shows = [];
   for (let i = 0; i < ids.length; i++) {
-    shows.push(document.getElementById(`i${ids[i]}`).value);
+    shows.push({
+      id: ids[i],
+      title: document.getElementById(`i${ids[i]}`).value,
+    });
   }
+
   console.log("shows", shows);
+  chrome.storage.sync.set({ shows: JSON.stringify(shows) }, function () {
+    console.log("Value is set to " + shows);
+  });
 };

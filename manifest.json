@@ -6,7 +6,7 @@
   "background": {
     "service_worker": "background.js"
   },
-  "permissions": ["history", "bookmarks"],
+  "permissions": ["history", "bookmarks", "storage"],
   "action": {
     "default_popup": "popup.html"
   }
