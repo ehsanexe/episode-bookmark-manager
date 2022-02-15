@@ -13,6 +13,13 @@ p {
   color: var(--primary);
 }
 
+#success_msg {
+  color: aquamarine;
+  display: none;
+  width: 100%;
+  justify-content: center;
+}
+
 .btnContainer {
   display: flex;
   justify-content: center;

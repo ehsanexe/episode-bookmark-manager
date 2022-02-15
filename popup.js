@@ -38,10 +38,12 @@ document.getElementById("add").onclick = function handleAdd(e) {
     chrome.storage.sync.get(["shows"], function (result) {
       let arr = JSON.parse(result.shows);
       let index = arr.findIndex((e) => e.id === id);
-      arr.splice(index, 1);
-      chrome.storage.sync.set({ shows: JSON.stringify(arr) }, function () {
-        console.log("Value is set to " + shows);
-      });
+      if (index > -1) {
+        arr.splice(index, 1);
+        chrome.storage.sync.set({ shows: JSON.stringify(arr) }, function () {
+          console.log("Value is set to " + shows);
+        });
+      }
     });
   };
 };
@@ -58,7 +60,10 @@ document.getElementById("save").onclick = function handleSave(e) {
   console.log("shows", shows);
   chrome.storage.sync.set({ shows: JSON.stringify(shows) }, function () {
     console.log("Value is set to " + shows);
+
+    document.getElementById("success_msg").style.display = "flex";
+    setTimeout(() => {
+      document.getElementById("success_msg").style.display = "none";
+    }, 3000);
   });
 };
-
-document.on;

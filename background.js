@@ -6,8 +6,16 @@ chrome.history.onVisited.addListener(async (res) => {
     let shows = JSON.parse(result.shows);
 
     shows.forEach((show) => {
+      let url = res.url.replace(/-/g, " ");
+      console.log(
+        "url",
+        url,
+        show.title,
+        url.includes(show.title.toLowerCase())
+      );
       if (
-        res.title.includes(show.title) &&
+        (res.title.toLowerCase().includes(show.title.toLowerCase()) ||
+          url.includes(show.title.toLowerCase())) &&
         res.title.toLowerCase().includes("episode") &&
         !res.title.toLowerCase().includes("youtube")
       ) {
@@ -20,7 +28,7 @@ chrome.history.onVisited.addListener(async (res) => {
           let folderId = false;
 
           bk.forEach((element) => {
-            console.log(element.title, element.title === "My Shows Manager");
+            // console.log(element.title, element.title === "My Shows Manager");
             if (element.title === "My Shows Manager") {
               folderId = element.id;
             }
@@ -43,13 +51,21 @@ chrome.history.onVisited.addListener(async (res) => {
               }
             );
           } else {
-            console.log("fired");
+            console.log("else fired");
             chrome.bookmarks.getChildren(folderId, (showsBk) => {
               console.log("shows bk", showsBk);
 
               showsBk.forEach((b) => {
-                let searchWord = b.title.slice(0, -10);
-                if (show.title.includes(searchWord)) {
+                let searchWord = b.title.slice(0, -10).trim();
+                console.log(
+                  "ddd",
+                  searchWord,
+                  show.title,
+                  show.title.toLowerCase().includes(searchWord.toLowerCase())
+                );
+                if (
+                  show.title.toLowerCase().includes(searchWord.toLowerCase())
+                ) {
                   chrome.bookmarks.remove(b.id);
                 }
               });
