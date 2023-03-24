@@ -1,20 +1,18 @@
 chrome.history.onVisited.addListener(async (res) => {
-  console.log("res url , res title", res.url, res.title);
+  console.log("history.onVisited", { history: res });
 
   chrome.storage.sync.get(["shows"], function (result) {
-    // console.log("Value currently is " + result.shows);
+    console.log("storage.sync.get", { storedShows: result });
     let shows = JSON.parse(result.shows);
 
+    console.log("storedShows.forEach:::");
     shows.forEach((show) => {
       let url = res.url.replace(/-/g, " ");
-      console.log(
-        "clean url",
-        url,
-        "show title",
-        show.title,
-        "url includes show title",
-        url.includes(show.title.toLowerCase())
-      );
+      console.log("show iteration:", {
+        cleanUrl: url,
+        show,
+        isUrlIncludesShowTitle: url.includes(show.title.toLowerCase()),
+      });
       if (
         (res.title.toLowerCase().includes(show.title.toLowerCase()) ||
           url.toLowerCase().includes(show.title.toLowerCase())) &&
@@ -22,7 +20,7 @@ chrome.history.onVisited.addListener(async (res) => {
           url.toLowerCase().includes("episode")) &&
         !res.title.toLowerCase().includes("youtube")
       ) {
-        console.log("match");
+        console.log("found match for following show: ", { show });
         let epIndex = res.title.toLowerCase().indexOf("episode");
 
         if (epIndex === -1) {
@@ -30,19 +28,18 @@ chrome.history.onVisited.addListener(async (res) => {
         }
 
         let epNo = res.title.slice(epIndex, epIndex + 10).trim();
-        console.log("ep no", epNo);
+        console.log(show.title, " Ep No", epNo);
 
         chrome.bookmarks.getChildren("1", (bk) => {
           let folderId = false;
 
           bk.forEach((element) => {
-            // console.log(element.title, element.title === "My Shows Manager");
             if (element.title === "My Shows Manager") {
               folderId = element.id;
             }
           });
 
-          console.log("folderId", folderId);
+          console.log("folder id:", { folderId });
 
           if (!folderId) {
             chrome.bookmarks.create(
@@ -59,18 +56,9 @@ chrome.history.onVisited.addListener(async (res) => {
               }
             );
           } else {
-            // console.log("else fired");
             chrome.bookmarks.getChildren(folderId, (showsBk) => {
-              // console.log("shows bk", showsBk);
-
               showsBk.forEach((b) => {
                 let searchWord = b.title.slice(0, -10).trim();
-                // console.log(
-                //   "ddd",
-                //   searchWord,
-                //   show.title,
-                //   show.title.toLowerCase().includes(searchWord.toLowerCase())
-                // );
                 if (
                   show.title.toLowerCase().includes(searchWord.toLowerCase())
                 ) {
@@ -87,5 +75,6 @@ chrome.history.onVisited.addListener(async (res) => {
         });
       }
     });
+    console.log("storedShows.forEach END:::");
   });
 });
