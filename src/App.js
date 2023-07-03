@@ -4,12 +4,15 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { green, orange } from "@mui/material/colors";
 import { Delete } from "@mui/icons-material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 function App() {
   const [shows, setShows] = useState([]);
   const [showName, setShowName] = useState("");
+  const currentDraggingChip = useRef();
+  const dragOverChip = useRef();
+  const [filledChipIndex, setFilledChipIndex] = useState(-1);
 
   const getShows = () => {
     console.log("getShow: called");
@@ -43,6 +46,15 @@ function App() {
     getShows();
   };
 
+  const onDragEnd = () => {
+    const temp = [...shows];
+    temp.splice(currentDraggingChip.current, 1);
+    temp.splice(dragOverChip.current, 0, shows[currentDraggingChip.current]);
+    setShows([...temp]);
+    setFilledChipIndex(-1);
+    chrome.storage.sync.set({ shows: JSON.stringify([...temp]) });
+  };
+
   return (
     <div className="ep-bookmark-mgr">
       <div className="header">
@@ -73,16 +85,34 @@ function App() {
       </div>
 
       <div className="shows">
-        {shows.map((show) => {
+        {shows.map((show, index) => {
           return (
-            <Chip
+            <Tooltip
               key={show.id}
-              label={show.title}
-              onDelete={() => handleDeleteShow(show.id)}
-              deleteIcon={<Delete />}
-              variant="outlined"
-              sx={{ justifyContent: "space-between", padding: "0 1rem" }}
-            />
+              title={show.title}
+              placement="top-start"
+              enterDelay={1000}
+            >
+              <Chip
+                className="showItemContainer"
+                draggable
+                onDragStart={() => (currentDraggingChip.current = index)}
+                onDragEnter={() => {
+                  dragOverChip.current = index;
+                  setFilledChipIndex(index);
+                }}
+                onDragEnd={onDragEnd}
+                label={show.title}
+                onDelete={() => handleDeleteShow(show.id)}
+                deleteIcon={<Delete />}
+                variant={filledChipIndex === index ? "filled" : "outlined"}
+                sx={{
+                  justifyContent: "space-between",
+                  padding: "0 1rem",
+                  width: "100%",
+                }}
+              />
+            </Tooltip>
           );
         })}
       </div>
