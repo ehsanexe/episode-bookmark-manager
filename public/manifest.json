@@ -1,7 +1,7 @@
 {
   "name": "Episode Bookmark Manager",
   "description": "Auto bookmark last watched episode of your favourite shows!",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "manifest_version": 3,
   "background": {
     "service_worker": "background.js"

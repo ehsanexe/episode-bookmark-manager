@@ -96,6 +96,7 @@ function App() {
               <Chip
                 className="showItemContainer"
                 draggable
+                onDragOver={(e) => e.preventDefault()}
                 onDragStart={() => (currentDraggingChip.current = index)}
                 onDragEnter={() => {
                   dragOverChip.current = index;
