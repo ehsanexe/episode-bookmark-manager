@@ -4,7 +4,7 @@ Auto bookmark last watched episode of your favourite shows!
 Episode Bookmark Manager is a Google Chrome extension that automates the task of bookmarking the last watched episode of your favorite shows. No more manual bookmarking and keeping track of your progress. With this extension, you can easily resume your shows right where you left off.
 
 ## Instructions
-Install the extension from the Chrome Web Store (https://chrome.google.com/webstore/detail/episode-bookmark-manager/fbacjjfkhoipheiadbdpmokpgcofploa).
+Install the extension from the [Chrome Web Store](https://chrome.google.com/webstore/detail/episode-bookmark-manager/fbacjjfkhoipheiadbdpmokpgcofploa).
 
 Once installed, click on the extension icon in your browser toolbar to open the Episode Bookmark Manager.
 
