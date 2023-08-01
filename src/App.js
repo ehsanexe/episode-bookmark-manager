@@ -2,10 +2,12 @@ import { Chip, IconButton, Input, Tooltip } from "@mui/material";
 import "./App.css";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import { green, orange } from "@mui/material/colors";
+import { blue, green, orange, red } from "@mui/material/colors";
 import { Delete } from "@mui/icons-material";
 import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
+import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
 
 function App() {
   const [shows, setShows] = useState([]);
@@ -13,6 +15,7 @@ function App() {
   const currentDraggingChip = useRef();
   const dragOverChip = useRef();
   const [filledChipIndex, setFilledChipIndex] = useState(-1);
+  const [isPaused, setIsPaused] = useState(false);
 
   const getShows = () => {
     console.log("getShow: called");
@@ -57,15 +60,29 @@ function App() {
 
   return (
     <div className="ep-bookmark-mgr">
+      <div className="pauseBtn"></div>
       <div className="header">
         <div>
-          <span className="title">Episode Bookmark Manager</span>
+          <span className="title">Ep Bookmark Manager</span>
         </div>
-        <Tooltip
-          title={`Enter the name of show as written on the site and click on add button thats it. Bookmarks of your favourite shows will be maintained in "My Shows Manager" folder in bookmark bar. If extension doesn't work try different combination of words`}
-        >
-          <HelpOutlineIcon sx={{ color: orange[500] }} />
-        </Tooltip>
+        <div className="headerIcons">
+          <IconButton
+            onClick={() => {
+              setIsPaused(!isPaused);
+            }}
+          >
+            {isPaused ? (
+              <PlayCircleOutlineIcon sx={{ color: blue["300"] }} />
+            ) : (
+              <PauseCircleOutlineIcon sx={{ color: red[500] }} />
+            )}
+          </IconButton>
+          <Tooltip
+            title={`Enter the name of show as written on the site and click on add button thats it. Bookmarks of your favourite shows will be maintained in "My Shows Manager" folder in bookmark bar. If extension doesn't work try different combination of words`}
+          >
+            <HelpOutlineIcon sx={{ color: orange[500] }} />
+          </Tooltip>
+        </div>
       </div>
       <div className="add-show">
         <Input
