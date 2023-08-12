@@ -17,6 +17,15 @@ function App() {
   const [filledChipIndex, setFilledChipIndex] = useState(-1);
   const [isPaused, setIsPaused] = useState(false);
 
+  const getPausedState = () => {
+    console.log("getPausedState: called");
+    chrome.storage.sync.get(["isPaused"], (pausedState) => {
+      console.log("pausedState:", pausedState);
+      let storedPausedState = JSON.parse(pausedState.isPaused);
+      setIsPaused(storedPausedState);
+    });
+  };
+
   const getShows = () => {
     console.log("getShow: called");
     chrome.storage.sync.get(["shows"], (result) => {
@@ -28,6 +37,7 @@ function App() {
 
   useEffect(() => {
     getShows();
+    getPausedState();
   }, []);
 
   const handleAddShow = () => {
@@ -60,7 +70,6 @@ function App() {
 
   return (
     <div className="ep-bookmark-mgr">
-      <div className="pauseBtn"></div>
       <div className="header">
         <div>
           <span className="title">Ep Bookmark Manager</span>
@@ -68,10 +77,11 @@ function App() {
         <div className="headerIcons">
           <IconButton
             onClick={() => {
+              chrome.storage.sync.set({ isPaused: JSON.stringify(!isPaused) });
               setIsPaused(!isPaused);
             }}
           >
-            {isPaused ? (
+            {!isPaused ? (
               <PlayCircleOutlineIcon sx={{ color: blue["300"] }} />
             ) : (
               <PauseCircleOutlineIcon sx={{ color: red[500] }} />
