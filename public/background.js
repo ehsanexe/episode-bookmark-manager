@@ -1,80 +1,98 @@
-chrome.history.onVisited.addListener(async (res) => {
-  console.log("history.onVisited", { history: res });
+chrome.history.onVisited.addListener(async (onVisitedHistory) => {
+  console.log("history.onVisited", { history: onVisitedHistory });
 
-  chrome.storage.sync.get(["shows"], function (result) {
-    console.log("storage.sync.get", { storedShows: result });
-    let shows = JSON.parse(result.shows);
+  await chrome.storage.sync.get(["isPaused"], function (storedPausedState) {
+    let isPaused = false;
 
-    console.log("storedShows.forEach:::");
-    shows.forEach((show) => {
-      let url = res.url.replace(/-/g, " ");
-      console.log("show iteration:", {
-        cleanUrl: url,
-        show,
-        isUrlIncludesShowTitle: url.includes(show.title.toLowerCase()),
-      });
-      if (
-        (res.title.toLowerCase().includes(show.title.toLowerCase()) ||
-          url.toLowerCase().includes(show.title.toLowerCase())) &&
-        (res.title.toLowerCase().includes("episode") ||
-          url.toLowerCase().includes("episode")) &&
-        !res.title.toLowerCase().includes("youtube")
-      ) {
-        console.log("found match for following show: ", { show });
-        let epIndex = res.title.toLowerCase().indexOf("episode");
+    console.log("storedPausedState:", storedPausedState);
+    isPaused = JSON.parse(storedPausedState?.isPaused || "false");
+    console.log("isPaused:", isPaused);
 
-        if (epIndex === -1) {
-          epIndex = url.toLowerCase().indexOf("episode");
-        }
+    if (!isPaused) {
+      chrome.storage.sync.get(["shows"], function (storedShows) {
+        console.log("storage.sync.get", { storedShows: storedShows });
+        let shows = JSON.parse(storedShows.shows);
 
-        let epNo = res.title.slice(epIndex, epIndex + 10).trim();
-        console.log(show.title, " Ep No", epNo);
-
-        chrome.bookmarks.getChildren("1", (bk) => {
-          let folderId = false;
-
-          bk.forEach((element) => {
-            if (element.title === "My Shows Manager") {
-              folderId = element.id;
-            }
+        console.log("storedShows.forEach:::");
+        shows.forEach((show) => {
+          let url = onVisitedHistory.url.replace(/-/g, " ");
+          console.log("show iteration:", {
+            cleanUrl: url,
+            show,
+            isUrlIncludesShowTitle: url.includes(show.title.toLowerCase()),
           });
+          if (
+            (onVisitedHistory.title
+              .toLowerCase()
+              .includes(show.title.toLowerCase()) ||
+              url.toLowerCase().includes(show.title.toLowerCase())) &&
+            (onVisitedHistory.title.toLowerCase().includes("episode") ||
+              url.toLowerCase().includes("episode")) &&
+            !onVisitedHistory.title.toLowerCase().includes("youtube")
+          ) {
+            console.log("found match for following show: ", { show });
+            let epIndex = onVisitedHistory.title
+              .toLowerCase()
+              .indexOf("episode");
 
-          console.log("folder id:", { folderId });
+            if (epIndex === -1) {
+              epIndex = url.toLowerCase().indexOf("episode");
+            }
 
-          if (!folderId) {
-            chrome.bookmarks.create(
-              {
-                parentId: "1",
-                title: "My Shows Manager",
-              },
-              (folder) => {
+            let epNo = onVisitedHistory.title
+              .slice(epIndex, epIndex + 10)
+              .trim();
+            console.log(show.title, " Ep No", epNo);
+
+            chrome.bookmarks.getChildren("1", (bk) => {
+              let folderId = false;
+
+              bk.forEach((element) => {
+                if (element.title === "My Shows Manager") {
+                  folderId = element.id;
+                }
+              });
+
+              console.log("folder id:", { folderId });
+
+              if (!folderId) {
+                chrome.bookmarks.create(
+                  {
+                    parentId: "1",
+                    title: "My Shows Manager",
+                  },
+                  (folder) => {
+                    chrome.bookmarks.create({
+                      parentId: folder.id,
+                      url: onVisitedHistory.url,
+                      title: show.title + " " + epNo,
+                    });
+                  }
+                );
+              } else {
+                chrome.bookmarks.getChildren(folderId, (showsBk) => {
+                  showsBk.forEach((b) => {
+                    let searchWord = b.title.slice(0, -10).trim();
+                    if (
+                      show.title
+                        .toLowerCase()
+                        .includes(searchWord.toLowerCase())
+                    ) {
+                      chrome.bookmarks.remove(b.id);
+                    }
+                  });
+                });
                 chrome.bookmarks.create({
-                  parentId: folder.id,
-                  url: res.url,
+                  parentId: folderId,
+                  url: onVisitedHistory.url,
                   title: show.title + " " + epNo,
                 });
               }
-            );
-          } else {
-            chrome.bookmarks.getChildren(folderId, (showsBk) => {
-              showsBk.forEach((b) => {
-                let searchWord = b.title.slice(0, -10).trim();
-                if (
-                  show.title.toLowerCase().includes(searchWord.toLowerCase())
-                ) {
-                  chrome.bookmarks.remove(b.id);
-                }
-              });
-            });
-            chrome.bookmarks.create({
-              parentId: folderId,
-              url: res.url,
-              title: show.title + " " + epNo,
             });
           }
         });
-      }
-    });
-    console.log("storedShows.forEach END:::");
+        console.log("storedShows.forEach END:::");
+      });
+    }
   });
 });
