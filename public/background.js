@@ -4,8 +4,9 @@ chrome.history.onVisited.addListener(async (onVisitedHistory) => {
   await chrome.storage.sync.get(["isPaused"], function (storedPausedState) {
     let isPaused = false;
 
-    console.log("isPaused:", storedPausedState);
-    isPaused = JSON.parse(storedPausedState?.isPaused) || false;
+    console.log("storedPausedState:", storedPausedState);
+    isPaused = JSON.parse(storedPausedState?.isPaused || "false");
+    console.log("isPaused:", isPaused);
 
     if (!isPaused) {
       chrome.storage.sync.get(["shows"], function (storedShows) {
