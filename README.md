@@ -13,3 +13,6 @@ Enter the name of the show you want to keep track of. Make sure to write the nam
 If the extension doesn't work for a particular show, try different combinations of words.
 
 The bookmarks for your favorite shows will be maintained in the "My Shows Manager" folder in your bookmark bar.
+
+![image](https://github.com/user-attachments/assets/b481cff5-e492-44c2-bce3-98416c24f781)
+
